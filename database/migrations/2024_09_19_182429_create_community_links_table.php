@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('community_links', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('user_id')->unsigned()->index();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->bigInteger('channel_id')->unsigned()->index();
+            $table->foreign('channel_id')->references('id')->on('channels');
+            $table->string('title');
+            $table->string('link')->unique();
+            $table->boolean('approved')->default(0);
             $table->timestamps();
         });
     }
