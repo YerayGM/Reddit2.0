@@ -26,4 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::post('/community-links', [CommunityLinkController::class, 'store'])->name('community-links.store');
+
+
 require __DIR__.'/auth.php';
