@@ -15,11 +15,19 @@
                     <ul class="mt-4">
                         @foreach ($links as $link)
                             <li class="mb-4 border-b border-gray-700 pb-2">
-                                <a href="{{ $link->url }}" class="text-blue-400 hover:underline">{{ $link->title }}</a>
+                                <a href="{{ $link->link }}" class="text-blue-400 hover:underline">{{ $link->title }}</a>
                                 <br>
                                 <small class="text-gray-400">
                                     Contributed by: {{ $link->creator->name }} - {{ $link->updated_at->diffForHumans() }}
                                 </small>
+                                <br>
+                                <!-- Mostrar el canal asociado -->
+                                @if ($link->channel) <!-- Verifica si el canal existe -->
+                                    <span class="inline-block px-2 py-1 text-white text-sm font-semibold rounded"
+                                          style="background-color: {{ $link->channel->color }}">
+                                        {{ $link->channel->title }}
+                                    </span>
+                                @endif
                             </li>
                         @endforeach
                     </ul>
@@ -51,8 +59,9 @@
                     <!-- Campo para el título -->
                     <div class="mb-4">
                         <label for="title" class="block text-gray-400 mb-2">Title:</label>
-                        <input type="text" name="title" id="title" class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-2" value="{{ old('title') }}">
-                        <!-- Mostrar error específico para el campo título -->
+                        <input type="text" name="title" id="title"
+                        class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-2"
+                        value="{{ old('title') }}">
                         @error('title')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -61,9 +70,27 @@
                     <!-- Campo para el enlace -->
                     <div class="mb-4">
                         <label for="link" class="block text-gray-400 mb-2">Link:</label>
-                        <input type="url" name="link" id="link" class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-2" value="{{ old('link') }}">
-                        <!-- Mostrar error específico para el campo enlace -->
+                        <input type="url" name="link" id="link"
+                        class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-2"
+                        value="{{ old('link') }}">
                         @error('link')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Campo para seleccionar canal -->
+                    <div class="mb-4">
+                        <label for="channel_id" class="block text-gray-400 mb-2">Channel:</label>
+                        <select name="channel_id" id="channel_id"
+                                class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-2">
+                            <option selected disabled>Pick a Channel...</option>
+                            @foreach ($channels as $channel)
+                                <option value="{{ $channel->id }}" {{ old('channel_id') == $channel->id ? 'selected' : '' }}>
+                                    {{ $channel->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('channel_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>

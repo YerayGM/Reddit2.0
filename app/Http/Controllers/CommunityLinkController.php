@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CommunityLink; // Importamos el modelo
+use App\Models\Channel; // Importamos el modelo Channel
 use Illuminate\Support\Facades\Auth; // Para obtener el usuario autenticado
 
 class CommunityLinkController extends Controller
@@ -14,7 +15,9 @@ class CommunityLinkController extends Controller
     public function index()
     {
         $links = CommunityLink::latest()->paginate(10); // Ejemplo de paginación
-        return view('dashboard', compact('links'));
+        $channels = Channel::orderBy('title','asc')->get();
+
+        return view('dashboard', compact('links', 'channels'));
     }
 
     /**
@@ -30,21 +33,17 @@ class CommunityLinkController extends Controller
      */
     public function store(Request $request)
     {
-        // Validamos los datos del formulario
-        $data = $request->validate([
-            'title' => 'required|max:255',
-            'link' => 'required|unique:community_links|url|max:255',
-        ]);
+    $data = $request->validate([
+    'title' => 'required|max:255',
+    'link' => 'required|unique:community_links|url|max:255',
+    ]);
 
-        // Añadimos user_id y channel_id al request
-        $data['user_id'] = Auth::id(); // Obtenemos el user_id del usuario autenticado
-        $data['channel_id'] = 1; // Hardcodeamos el channel_id por ahora
-
-        // Creamos el link en la base de datos
-        CommunityLink::create($data);
-
-        // Redirigimos de vuelta con un mensaje de éxito
-        return back()->with('success', 'Link added successfully!');
+    $link = new CommunityLink($data);
+    // Si uso CommunityLink::create($data) tengo que declarar user_id y channel_id como $fillable
+    $link->user_id = Auth::id();
+    $link->channel_id = 1;
+    $link->save();
+    return back();
     }
 
     /**
