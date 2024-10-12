@@ -12,7 +12,7 @@ class CommunityLink extends Model
     use HasFactory;
 
     // Campos permitidos para asignación masiva
-    protected $fillable = ['title', 'link', 'channel_id', 'user_id'];
+    protected $fillable = ['title', 'link', 'channel_id'];
 
     // Definimos la relación con el modelo User
     public function creator()

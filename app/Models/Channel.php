@@ -9,6 +9,8 @@ class Channel extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['title', 'slug', 'color'];
+
     // Define la relación con CommunityLink
     public function communityLinks()
     {
