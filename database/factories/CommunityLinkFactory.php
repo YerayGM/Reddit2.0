@@ -20,11 +20,11 @@ class CommunityLinkFactory extends Factory
     public function definition(): array
     {
         return [
-                'user_id' => \App\Models\User::all()->random()->id,
-                'channel_id' => 1,
-                'title' => $this->faker->sentence,
-                'link' => $this->faker->url,
-                'approved' => 0
-                ];
+            'user_id' => \App\Models\User::all()->random()->id,
+            'channel_id' => 1,
+            'title' => $this->faker->sentence,
+            'link' => $this->faker->url,
+            'approved' => 0
+            ];
     }
 }

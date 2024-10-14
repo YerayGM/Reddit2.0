@@ -12,25 +12,32 @@
             <div class="bg-gray-800 text-gray-100 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h1 class="text-lg font-bold">Community Contributions</h1>
+
+                    <!-- Mostrar mensaje si no hay enlaces aprobados -->
                     <ul class="mt-4">
-                        @foreach ($links as $link)
-                            <li class="mb-4 border-b border-gray-700 pb-2">
-                                <a href="{{ $link->link }}" class="text-blue-400 hover:underline">{{ $link->title }}</a>
-                                <br>
-                                <small class="text-gray-400">
-                                    Contributed by: {{ $link->creator->name }} - {{ $link->updated_at->diffForHumans() }}
-                                </small>
-                                <br>
-                                <!-- Mostrar el canal asociado -->
-                                @if ($link->channel) <!-- Verifica si el canal existe -->
-                                    <span class="inline-block px-2 py-1 text-white text-sm font-semibold rounded"
-                                          style="background-color: {{ $link->channel->color }}">
-                                        {{ $link->channel->title }}
-                                    </span>
-                                @endif
-                            </li>
-                        @endforeach
+                        @if ($links->isEmpty())
+                            <p>No approved contributions yet.</p>
+                        @else
+                            @foreach ($links as $link)
+                                <li class="mb-4 border-b border-gray-700 pb-2">
+                                    <a href="{{ $link->link }}" class="text-blue-400 hover:underline">{{ $link->title }}</a>
+                                    <br>
+                                    <small class="text-gray-400">
+                                        Contributed by: {{ $link->creator->name }} - {{ $link->updated_at->diffForHumans() }}
+                                    </small>
+                                    <br>
+                                    <!-- Mostrar el canal asociado -->
+                                    @if ($link->channel) <!-- Verifica si el canal existe -->
+                                        <span class="inline-block px-2 py-1 text-white text-sm font-semibold rounded"
+                                              style="background-color: {{ $link->channel->color }}">
+                                            {{ $link->channel->title }}
+                                        </span>
+                                    @endif
+                                </li>
+                            @endforeach
+                        @endif
                     </ul>
+
                     <div class="mt-6">
                         {{ $links->links() }}
                     </div>
@@ -40,6 +47,13 @@
             <!-- Sección para contribuir un nuevo enlace -->
             <div class="bg-gray-800 text-gray-100 p-6 rounded-lg shadow-sm">
                 <h2 class="text-lg font-bold mb-4">Contribute a link</h2>
+
+                <!-- Mostrar mensaje de éxito si existe -->
+                @if (session('message'))
+                    <div class="bg-green-500 text-white p-4 rounded-lg mb-6">
+                        {{ session('message') }}
+                    </div>
+                @endif
 
                 <!-- Mostrar errores generales al principio del formulario -->
                 @if($errors->any())
