@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CommunityLink; // Importamos el modelo
 use App\Models\Channel; // Importamos el modelo Channel
 use Illuminate\Support\Facades\Auth; // Para obtener el usuario autenticado
+use App\Http\Requests\CommunityLinkForm; // Aquí importamos correctamente el FormRequest
 
 class CommunityLinkController extends Controller
 {
@@ -31,30 +32,30 @@ class CommunityLinkController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CommunityLinkForm $request)
     {
-        // Validar los datos del formulario
-        $data = $request->validate([
-            'title' => 'required|max:255',
-            'link' => 'required|unique:community_links|url|max:255',
-            'channel_id' => 'required|exists:channels,id' // Asegurar que el canal existe
-        ]);
-    
-        // Crear un nuevo enlace
+        // Obtener los datos validados del formulario
+        $data = $request->validated();
+        // Crear un nuevo enlace con los datos del formulario
         $link = new CommunityLink($data);
-        
         // Asignar el ID del usuario autenticado
         $link->user_id = Auth::id();
-        
         // Comprobar si el usuario es confiable y aprobar el enlace automáticamente
-        $link->approved = Auth::user()->trusted ?? false;
-    
-        // Guardar el enlace
+        if (Auth::user()->trusted) {
+            $link->approved = true;
+            $message = 'Your link has been automatically approved.';
+            $messageType = 'success';
+        } else {
+            $link->approved = false;
+            $message = 'Your link is pending approval.';
+            $messageType = 'warning';
+        }
+        // Guardar el enlace en la base de datos
         $link->save();
-    
-        // Redirigir de vuelta con un mensaje de éxito
-        return back()->with('message', 'Link submitted successfully.');
+        // Redirigir de vuelta con el mensaje flash
+        return back()->with($messageType, $message);
     }
+
     
 
     /**
