@@ -41,4 +41,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',  // Este es el tipo correcto para las contraseñas
     ];
+
+    // app/Models/User.php
+
+    public function communityLinks()
+    {
+        return $this->hasMany(CommunityLink::class);
+    }
 }

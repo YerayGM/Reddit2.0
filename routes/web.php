@@ -28,5 +28,8 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/community-links', [CommunityLinkController::class, 'store'])->name('community-links.store');
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/mylinks', [CommunityLinkController::class, 'myLinks'])->name('mylinks');
+});
 
 require __DIR__.'/auth.php';

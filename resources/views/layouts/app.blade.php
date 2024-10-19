@@ -27,7 +27,7 @@
                 </header>
             @endisset
 
-            <!-- Page Content -->
+            <!-- Ejemplo de menú en Blade -->
             <main>
                 {{ $slot }}
             </main>

@@ -89,5 +89,11 @@ class CommunityLinkController extends Controller
     {
         //
     }
+
+    public function myLinks()
+    {
+        $links = Auth::user()->communityLinks()->paginate(10); // Paginación de 10 links por página
+        return view('mylinks', compact('links'));
+    }
 }
 
