@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User; // Importamos el modelo User
-use App\Models\Channel; // Importamos el modelo Channel
+use App\Models\User;
+use App\Models\Channel;
+use Illuminate\Support\Facades\Auth;
 
 class CommunityLink extends Model
 {
@@ -24,5 +25,31 @@ class CommunityLink extends Model
     public function channel()
     {
         return $this->belongsTo(Channel::class); // Un CommunityLink pertenece a un Channel
+    }
+
+    // app/Models/CommunityLink.php
+    // app/Models/CommunityLink.php
+    public function hasAlreadyBeenSubmitted()
+    {
+        $existing = static::where('link', $this->link)->first();
+        if ($existing) {
+            if (Auth::user()->isTrusted()) {
+                $existing->touch(); // Actualiza el timestamp
+                if ($existing->approved == 0) {
+                    $existing->approved = 1; // Aprueba el link si no está aprobado
+                }
+                $existing->save();
+                session()->flash('success', 'The link already exists and its timestamp has been updated.');
+                return true;
+            } else {
+                if ($existing->approved) {
+                    session()->flash('warning', 'The link already exists and it is already approved but you are not a trusted user, so it will not be updated in the list.');
+                } else {
+                    session()->flash('warning', 'The link already exists and it is pending for approval but you are not a trusted user, so it will not be updated in the list.');
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }

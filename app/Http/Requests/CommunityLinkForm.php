@@ -19,14 +19,17 @@ class CommunityLinkForm extends FormRequest
     /**
      * Reglas de validación para la solicitud.
      */
+    // app/Http/Requests/CommunityLinkForm.php
     public function rules(): array
     {
         return [
             'title' => 'required|max:255',
-            'link' => 'required|unique:community_links|url|max:255',
+            'link' => 'required|url|max:255',
             'channel_id' => 'required|exists:channels,id',
         ];
     }
+
+
 
     /**
      * Mensajes de error personalizados.
@@ -37,7 +40,6 @@ class CommunityLinkForm extends FormRequest
             'title.required' => 'El título es obligatorio.',
             'link.required' => 'El enlace es obligatorio.',
             'link.url' => 'El enlace debe ser una URL válida.',
-            'link.unique' => 'Este enlace ya ha sido enviado.',
             'channel_id.required' => 'Debes seleccionar un canal.',
             'channel_id.exists' => 'El canal seleccionado no es válido.',
         ];

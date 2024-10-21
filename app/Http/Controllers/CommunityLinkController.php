@@ -3,23 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\CommunityLink; // Importamos el modelo
-use App\Models\Channel; // Importamos el modelo Channel
-use Illuminate\Support\Facades\Auth; // Para obtener el usuario autenticado
-use App\Http\Requests\CommunityLinkForm; // Aquí importamos correctamente el FormRequest
+use App\Models\CommunityLink;
+use App\Models\Channel;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CommunityLinkForm;
 
 class CommunityLinkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    // app/Http/Controllers/CommunityLinkController.php
     public function index()
     {
-        $links = CommunityLink::where('approved', 1)->paginate(25);
-        $channels = Channel::orderBy('title','asc')->get();
-
+        $links = CommunityLink::where('approved', true)->latest('updated_at')->paginate(10);
+        $channels = Channel::orderBy('title', 'asc')->get();
         return view('dashboard', compact('links', 'channels'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -32,16 +33,20 @@ class CommunityLinkController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // app/Http/Controllers/CommunityLinkController.php
     public function store(CommunityLinkForm $request)
     {
-        // Obtener los datos validados del formulario
         $data = $request->validated();
-        // Crear un nuevo enlace con los datos del formulario
+
         $link = new CommunityLink($data);
-        // Asignar el ID del usuario autenticado
         $link->user_id = Auth::id();
-        // Comprobar si el usuario es confiable y aprobar el enlace automáticamente
-        if (Auth::user()->trusted) {
+
+        // Verificar si el link ya ha sido enviado
+        if ($link->hasAlreadyBeenSubmitted()) {
+            return back();
+        }
+
+        if (Auth::user()->isTrusted()) {
             $link->approved = true;
             $message = 'Your link has been automatically approved.';
             $messageType = 'success';
@@ -50,13 +55,12 @@ class CommunityLinkController extends Controller
             $message = 'Your link is pending approval.';
             $messageType = 'warning';
         }
-        // Guardar el enlace en la base de datos
+
         $link->save();
-        // Redirigir de vuelta con el mensaje flash
         return back()->with($messageType, $message);
     }
 
-    
+
 
     /**
      * Display the specified resource.
@@ -90,10 +94,12 @@ class CommunityLinkController extends Controller
         //
     }
 
+    /**
+     * Display the user's links.
+     */
     public function myLinks()
     {
-        $links = Auth::user()->communityLinks()->paginate(10); // Paginación de 10 links por página
+        $links = Auth::user()->communityLinks()->paginate(10);
         return view('mylinks', compact('links'));
     }
 }
-
