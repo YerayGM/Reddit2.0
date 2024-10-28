@@ -26,7 +26,7 @@ class CommunityLink extends Model
     {
         return $this->belongsTo(Channel::class); // Un CommunityLink pertenece a un Channel
     }
-    
+
     // app/Models/CommunityLink.php
     public function hasAlreadyBeenSubmitted()
     {
@@ -50,5 +50,10 @@ class CommunityLink extends Model
             }
         }
         return false;
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'community_link_users');
     }
 }

@@ -20,7 +20,7 @@ class CommunityLinkController extends Controller
         } else {
             $links = CommunityLink::where('approved', true)->latest('updated_at')->paginate(10);
         }
-        $channels = Channel::orderBy('title', 'asc')->get();
+        $channels = Channel::orderBy('title', 'asc')->get(); //
 
         return view('dashboard', compact('links', 'channels'));
     }
