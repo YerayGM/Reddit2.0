@@ -26,8 +26,7 @@ class CommunityLink extends Model
     {
         return $this->belongsTo(Channel::class); // Un CommunityLink pertenece a un Channel
     }
-
-    // app/Models/CommunityLink.php
+    
     // app/Models/CommunityLink.php
     public function hasAlreadyBeenSubmitted()
     {

@@ -13,13 +13,18 @@ class CommunityLinkController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // app/Http/Controllers/CommunityLinkController.php
-    public function index()
+    public function index(Channel $channel = null)
     {
-        $links = CommunityLink::where('approved', true)->latest('updated_at')->paginate(10);
+        if ($channel) {
+            $links = $channel->communityLinks()->where('approved', true)->latest('updated_at')->paginate(10);
+        } else {
+            $links = CommunityLink::where('approved', true)->latest('updated_at')->paginate(10);
+        }
         $channels = Channel::orderBy('title', 'asc')->get();
+
         return view('dashboard', compact('links', 'channels'));
     }
+    
 
 
     /**
