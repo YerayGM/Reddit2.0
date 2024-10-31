@@ -28,13 +28,20 @@
                                     <!-- Mostrar el canal asociado -->
                                     @if ($link->channel)
                                         <span class="inline-block mt-2 px-3 py-1 rounded-full text-white text-sm font-semibold"
-                                              style="background-color: {{ $link->channel->color }}">
+                                            style="background-color: {{ $link->channel->color }}">
                                             {{ $link->channel->title }}
                                         </span>
                                     @endif
-                                    <span class="ml-2 px-2 py-1 bg-gray-700 rounded text-sm font-semibold text-gray-300">
-                                        {{ $link->users()->count() }}
-                                    </span>
+                                    <!--Parte donde se vota cada link por usuario-->
+                                    <form method="POST" action="/votes/{{ $link->id }}" class="inline">
+                                        @csrf
+                                        <button type="submit"
+                                            class="px-4 py-2 rounded 
+                                                {{ Auth::check() && Auth::user()->votedFor($link) ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-gray-500 hover:bg-gray-600 text-white' }}"
+                                            {{ !Auth::check() || !Auth::user()->isTrusted() ? 'disabled' : '' }}>
+                                            {{ $link->users()->count() }}
+                                        </button>
+                                    </form>
                                 </li>
                             @endforeach
                         @endif

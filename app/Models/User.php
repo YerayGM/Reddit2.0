@@ -54,4 +54,17 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->trusted;
     }
+
+    // app/Models/User.php
+    public function votes()
+    {
+        // Relación muchos a muchos con CommunityLink a través de la tabla pivote community_link_users
+        return $this->belongsToMany(CommunityLink::class, 'community_link_users');
+    }
+
+    public function votedFor(CommunityLink $link)
+    {
+        // Verifica si el enlace ya está en la colección de votos del usuario
+        return $this->votes->contains($link);
+    }
 }

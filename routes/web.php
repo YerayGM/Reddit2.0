@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommunityLinkController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CommunityLinkUserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,5 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('dashboard/{channel:slug}',[CommunityLinkController::class, 'index']);
+
+Route::post('/votes/{link}', [CommunityLinkUserController::class, 'store']);
 
 require __DIR__.'/auth.php';
