@@ -3,29 +3,36 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\CommunityLink;
 use App\Models\Channel;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CommunityLinkForm;
+use App\Queries\CommunityLinkQuery;
 
 class CommunityLinkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Channel $channel = null)
+    public function index(Channel $channel = null, CommunityLinkQuery $query)
     {
-        if ($channel) {
-            $links = $channel->communityLinks()->where('approved', true)->latest('updated_at')->paginate(10);
+        // Verifica si se solicita ordenar por popularidad
+        if (request()->exists('popular')) {
+            $links = $channel
+                ? $query->getMostPopularByChannel($channel)
+                : $query->getMostPopular();
         } else {
-            $links = CommunityLink::where('approved', true)->latest('updated_at')->paginate(10);
+            $links = $channel
+                ? $query->getByChannel($channel)
+                : $query->getAll();
         }
-        $channels = Channel::orderBy('title', 'asc')->get(); //
 
+        $links = (new CommunityLinkQuery())->getAll();
+        // Obtener todos los canales ordenados alfabéticamente
+        $channels = Channel::orderBy('title', 'asc')->get();
+
+        // Retornar la vista del dashboard con los enlaces y canales
         return view('dashboard', compact('links', 'channels'));
     }
-    
-
 
     /**
      * Show the form for creating a new resource.
@@ -51,6 +58,7 @@ class CommunityLinkController extends Controller
             return back();
         }
 
+        // Aprobar automáticamente si el usuario es de confianza
         if (Auth::user()->isTrusted()) {
             $link->approved = true;
             $message = 'Your link has been automatically approved.';
