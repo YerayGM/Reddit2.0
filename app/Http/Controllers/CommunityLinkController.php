@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Channel;
+use App\Models\CommunityLink;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CommunityLinkForm;
 use App\Queries\CommunityLinkQuery;
@@ -13,24 +14,25 @@ class CommunityLinkController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Channel $channel = null, CommunityLinkQuery $query)
+    public function index(Request $request)
     {
-        // Verifica si se solicita ordenar por popularidad
-        if (request()->exists('popular')) {
-            $links = $channel
-                ? $query->getMostPopularByChannel($channel)
-                : $query->getMostPopular();
+        $query = new CommunityLinkQuery();
+        $channels = Channel::all();
+        $channel = $request->input('channel') ? Channel::find($request->input('channel')) : null;
+    
+        if ($request->exists('popular')) {
+            if ($channel) {
+                $links = $query->getMostPopularByChannel($channel);
+            } else {
+                $links = $query->getMostPopular();
+            }
         } else {
-            $links = $channel
-                ? $query->getByChannel($channel)
-                : $query->getAll();
+            if ($channel) {
+                $links = $query->getByChannel($channel);
+            } else {
+                $links = $query->getAll();
+            }
         }
-
-        $links = (new CommunityLinkQuery())->getAll();
-        // Obtener todos los canales ordenados alfabéticamente
-        $channels = Channel::orderBy('title', 'asc')->get();
-
-        // Retornar la vista del dashboard con los enlaces y canales
         return view('dashboard', compact('links', 'channels'));
     }
 
@@ -45,7 +47,6 @@ class CommunityLinkController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // app/Http/Controllers/CommunityLinkController.php
     public function store(CommunityLinkForm $request)
     {
         $data = $request->validated();
@@ -55,7 +56,7 @@ class CommunityLinkController extends Controller
 
         // Verificar si el link ya ha sido enviado
         if ($link->hasAlreadyBeenSubmitted()) {
-            return back();
+            return back()->with('info', 'This link has already been submitted.');
         }
 
         // Aprobar automáticamente si el usuario es de confianza
@@ -72,8 +73,6 @@ class CommunityLinkController extends Controller
         $link->save();
         return back()->with($messageType, $message);
     }
-
-
 
     /**
      * Display the specified resource.
