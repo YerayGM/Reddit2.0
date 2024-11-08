@@ -4,11 +4,6 @@ use App\Http\Controllers\CommunityLinkController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CommunityLinkUserController;
-use App\Http\Controllers\VoteController;
-
-Route::post('/community-links/{communityLinkId}/vote', [VoteController::class, 'store']);
-
-Route::delete('/community-links/{communityLinkId}/vote', [VoteController::class, 'destroy']);
 
 Route::get('/', function () {
     return view('welcome');
