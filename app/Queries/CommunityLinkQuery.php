@@ -7,33 +7,31 @@ use App\Models\CommunityLink;
 
 class CommunityLinkQuery
 {
-    public function getByChannel(Channel $channel)
-    {
+    public function getByChannel(Channel $channel){
         return $channel->communityLinks()
             ->where('approved', true)
-            ->latest('updated_at')
+            ->orderBy('updated_at', 'desc')
             ->paginate(10);
     }
 
-    public function getAll()
-    {
+    public function getAll($perPage = 10){
         return CommunityLink::where('approved', true)
-            ->latest('updated_at')
-            ->paginate(10);
+            ->orderBy('updated_at', 'desc')
+            ->paginate($perPage);
     }
 
-    public function getMostPopular()
-    {
-        return CommunityLink::where('approved', true)
-            ->latest('updated_at')
-            ->paginate(10);
-    }
-
-    public function getMostPopularByChannel(Channel $channel)
-    {
-        return $channel->communityLinks()
+    public function getMostPopular(){
+        return CommunityLink::withCount('votes')
             ->where('approved', true)
-            ->orderBy('updated_at', 'desc') // Ordena por la fecha de actualización como alternativa
+            ->orderBy('votes_count', 'desc') // Ordena de más a menos votos
+            ->paginate(10);
+    }
+    
+    public function getMostPopularByChannel(Channel $channel){
+        return $channel->communityLinks()
+            ->withCount('votes')
+            ->where('approved', true)
+            ->orderBy('votes_count', 'desc') // Ordena de más a menos votos dentro del canal
             ->paginate(10);
     }
 }

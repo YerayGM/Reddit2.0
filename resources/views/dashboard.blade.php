@@ -22,7 +22,7 @@
                         </li>
                         <li>
                             <a class="px-4 py-2 rounded-lg {{ request()->exists('popular') ? 'text-gray-500 cursor-not-allowed' : 'text-blue-500 hover:text-blue-700' }}"
-                                href="?popular">
+                                href="{{ request()->fullUrlWithQuery(['popular' => true]) }}">
                                 Mas Popular
                             </a>
                         </li>

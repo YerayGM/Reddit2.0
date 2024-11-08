@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Channel;
+use App\Models\Vote; // Asegúrate de importar el modelo Vote
 use Illuminate\Support\Facades\Auth;
 
 class CommunityLink extends Model
@@ -27,7 +27,12 @@ class CommunityLink extends Model
         return $this->belongsTo(Channel::class); // Un CommunityLink pertenece a un Channel
     }
 
-    // app/Models/CommunityLink.php
+    // Definimos la relación con el modelo Vote
+    public function votes()
+    {
+        return $this->hasMany(Vote::class); // Un CommunityLink puede tener muchos votos
+    }
+
     public function hasAlreadyBeenSubmitted()
     {
         $existing = static::where('link', $this->link)->first();
