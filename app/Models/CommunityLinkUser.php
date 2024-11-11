@@ -5,20 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CommunityLinkUser extends Model
+class CommunityLinkUser  extends Model
 {
-    use HasFactory;
-
-    // Habilitar la asignación masiva para estos campos
     protected $fillable = ['user_id', 'community_link_id'];
 
-    // Método toggle para alternar entre votar y retirar el voto
-    public function toggle()
+    public function votes()
     {
-        if ($this->exists) {
-            $this->delete(); // Si el voto existe, eliminarlo
+        return $this->belongsToMany(CommunityLink::class, 'community_link_users');
+    }
+
+    public function votedFor(CommunityLink $link)
+    {
+        return $this->votes->contains($link);
+    }
+
+    public function toggle(CommunityLink $link)
+    {
+        if ($this->votedFor($link)) {
+            $this->votes()->detach($link);
         } else {
-            $this->save(); // Si no existe, guardarlo como nuevo voto
+            $this->votes()->attach($link);
         }
     }
 }

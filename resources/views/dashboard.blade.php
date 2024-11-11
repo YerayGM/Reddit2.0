@@ -63,7 +63,7 @@
                     </ul>
 
                     <div class="mt-6 flex justify-center">
-                        {{ $links->appends($_GET)->links() }}
+                        {{ $links->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>

@@ -28,12 +28,9 @@ class CommunityLinkUserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CommunityLink $link) {
-        $vote = CommunityLinkUser::firstOrNew(['user_id' => Auth::id(), 'community_link_id' => $link->id]);
-        if ($vote->id)
-            $vote->delete();
-        else
-            $vote->save();
+    public function store(CommunityLink $link)
+    {
+        CommunityLinkUser ::firstOrNew(['user_id' => Auth::id(), 'community_link_id' => $link->id])->toggle();
         return back();
     }
 

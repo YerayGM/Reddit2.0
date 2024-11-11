@@ -7,31 +7,30 @@ use App\Models\Channel;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CommunityLinkForm;
 use App\Queries\CommunityLinkQuery;
+use App\Models\CommunityLink;
 
 class CommunityLinkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Channel $channel = null, CommunityLinkQuery $query)
+    public function index()
     {
-        // Verifica si se solicita ordenar por popularidad
-        if (request()->exists('popular')) {
-            $links = $channel
-                ? $query->getMostPopularByChannel($channel)
-                : $query->getMostPopular();
+        $query = new CommunityLinkQuery();
+        $channels = Channel::all(); // Obtener todos los canales
+    
+        // Obtener el ID del canal de la solicitud
+        $channelId = request()->input('channel');
+    
+        if (request()->exists('popular') && $channelId) {
+            $links = $query->getMostPopularByChannel(Channel::findOrFail($channelId));
+        } elseif (request()->exists('popular')) {
+            $links = $query->getMostPopular();
         } else {
-            $links = $channel
-                ? $query->getByChannel($channel)
-                : $query->getAll();
+            $links = $query->getAll();
         }
-
-        $links = (new CommunityLinkQuery())->getAll();
-        // Obtener todos los canales ordenados alfabéticamente
-        $channels = Channel::orderBy('title', 'asc')->get();
-
-        // Retornar la vista del dashboard con los enlaces y canales
-        return view('dashboard', compact('links', 'channels'));
+    
+        return view('dashboard', compact('links', 'channels')); // Pasar ambas variables a la vista
     }
 
     /**
@@ -68,6 +67,8 @@ class CommunityLinkController extends Controller
             $message = 'Your link is pending approval.';
             $messageType = 'warning';
         }
+
+        
 
         $link->save();
         return back()->with($messageType, $message);
