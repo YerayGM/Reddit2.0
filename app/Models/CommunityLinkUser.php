@@ -19,12 +19,12 @@ class CommunityLinkUser  extends Model
         return $this->votes->contains($link);
     }
 
-    public function toggle(CommunityLink $link)
+    public function toggle()
     {
-        if ($this->votedFor($link)) {
-            $this->votes()->detach($link);
+        if ($this->exists) {
+            $this->delete();
         } else {
-            $this->votes()->attach($link);
+            $this->save();
         }
     }
 }

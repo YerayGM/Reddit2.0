@@ -33,7 +33,6 @@ class CommunityLinkUserController extends Controller
         CommunityLinkUser ::firstOrNew(['user_id' => Auth::id(), 'community_link_id' => $link->id])->toggle();
         return back();
     }
-
     /**
      * Display the specified resource.
      */

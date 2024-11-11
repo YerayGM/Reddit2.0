@@ -22,18 +22,20 @@ class CommunityLinkQuery
 
     public function getMostPopular()
     {
-        // Aquí puedes definir una lógica alternativa para determinar la "popularidad"
-        return CommunityLink::where('approved', true)
-            ->orderBy('created_at', 'desc') // O cualquier otra lógica que necesites
+        // Utiliza withCount para contar los votos (usuarios que han votado)
+        return CommunityLink::withCount('users') // Asegúrate de que 'users' es la relación correcta
+            ->where('approved', true)
+            ->orderBy('users_count', 'desc') // Ordena por el conteo de votos
             ->paginate(10);
     }
 
     public function getMostPopularByChannel(Channel $channel)
     {
-        // Aquí también puedes definir una lógica alternativa para determinar la "popularidad"
-        return CommunityLink::where('channel_id', $channel->id)
+        // Utiliza withCount para contar los votos (usuarios que han votado)
+        return CommunityLink::withCount('users') // Asegúrate de que 'users' es la relación correcta
+            ->where('channel_id', $channel->id)
             ->where('approved', true)
-            ->orderBy('created_at', 'desc') // O cualquier otra lógica que necesites
+            ->orderBy('users_count', 'desc') // Ordena por el conteo de votos
             ->paginate(10);
     }
 }
