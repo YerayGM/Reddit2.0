@@ -17,21 +17,34 @@ class CommunityLinkController extends Controller
     public function index()
     {
         $query = new CommunityLinkQuery();
-        $channels = Channel::all(); // Obtener todos los canales
-    
-        // Obtener el ID del canal de la solicitud
+        $channels = Channel::all();
         $channelId = request()->input('channel');
+        $searchTerm = request()->input('query');
     
+        // Construye la consulta base
         if (request()->exists('popular') && $channelId) {
             $links = $query->getMostPopularByChannel(Channel::findOrFail($channelId));
         } elseif (request()->exists('popular')) {
             $links = $query->getMostPopular();
+        } elseif ($channelId) {
+            $links = $query->getByChannel(Channel::findOrFail($channelId));
         } else {
             $links = $query->getAll();
         }
     
-        return view('dashboard', compact('links', 'channels')); // Pasar ambas variables a la vista
+        // Aplica filtros adicionales si hay un término de búsqueda
+        if ($searchTerm) {
+            $links->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%'); // Solo filtra por 'title'
+            });
+        }        
+    
+        // Pagina los resultados
+        $links = $links->paginate(10)->appends(['query' => $searchTerm]);
+    
+        return view('dashboard', compact('links', 'channels'));
     }
+    
 
     /**
      * Show the form for creating a new resource.

@@ -13,21 +13,30 @@
                 <div class="p-8">
                     <h1 class="text-2xl font-semibold mb-4">Community Contributions</h1>
 
+                    <!-- Formulario de búsqueda -->
+                    <form method="GET" action="{{ route('communityLinks.index') }}" class="flex items-center space-x-2 mb-4">
+                        <input type="text" name="query" placeholder="Buscar por título" value="{{ request('query') }}" required
+                            class="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue-500 placeholder-gray-400" />
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Buscar</button>
+                    </form>
+
+                    <!-- Opciones de filtro -->
                     <ul class="flex space-x-4">
                         <li>
                             <a class="px-4 py-2 rounded-lg {{ request()->exists('popular') ? 'text-blue-500 hover:text-blue-700' : 'text-gray-500 cursor-not-allowed' }}"
                                 href="{{ request()->url() }}">
-                                Mas Reciente
+                                Más Reciente
                             </a>
                         </li>
                         <li>
                             <a class="px-4 py-2 rounded-lg {{ request()->exists('popular') ? 'text-gray-500 cursor-not-allowed' : 'text-blue-500 hover:text-blue-700' }}"
                                 href="?popular">
-                                Mas Popular
+                                Más Popular
                             </a>
                         </li>
                     </ul>
-                    
+
+
                     <!-- Mostrar mensaje si no hay enlaces aprobados -->
                     <ul class="mt-4 space-y-4">
                         @if ($links->isEmpty())
@@ -47,12 +56,12 @@
                                 {{ $link->channel->title }}
                             </span>
                             @endif
-                            <!--Parte donde se vota cada link por usuario-->
+                            <!-- Parte donde se vota cada link por usuario -->
                             <form method="POST" action="/votes/{{ $link->id }}" class="inline">
                                 @csrf
                                 <button type="submit"
                                     class="px-4 py-2 rounded 
-                                                {{ Auth::check() && Auth::user()->votedFor($link) ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-gray-500 hover:bg-gray-600 text-white' }}"
+                                                    {{ Auth::check() && Auth::user()->votedFor($link) ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-gray-500 hover:bg-gray-600 text-white' }}"
                                     {{ !Auth::check() || !Auth::user()->isTrusted() ? 'disabled' : '' }}>
                                     {{ $link->users()->count() }}
                                 </button>

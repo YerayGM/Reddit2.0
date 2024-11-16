@@ -5,6 +5,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CommunityLinkUserController;
 
+Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+Route::get('/community-links', [CommunityLinkController::class, 'index'])->name('communityLinks.index');
 
 Route::get('/', function () {
     return view('welcome');
