@@ -6,32 +6,10 @@ use Illuminate\Contracts\Auth\MustVerifyEmail; // Debe estar descomentado
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class User
- *
- * @property $id
- * @property $name
- * @property $email
- * @property $email_verified_at
- * @property $password
- * @property $image
- * @property $remember_token
- * @property $created_at
- * @property $updated_at
- * @property $trusted
- *
- * @property CommunityLinkUser[] $communityLinkUsers
- * @property CommunityLink[] $communityLinks
- * @package App
- * @mixin \Illuminate\Database\Eloquent\Builder
- */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
-
-    protected $perPage = 20;
 
     /**
      * The attributes that are mass assignable.
@@ -43,9 +21,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'image',
-        'trusted',
     ];
-
+    
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -66,27 +43,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',  // Este es el tipo correcto para las contraseñas
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function communityLinkUsers()
-    {
-        return $this->hasMany(\App\Models\CommunityLinkUser::class, 'user_id');
-    }
+    // app/Models/User.php
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function communityLinks()
     {
-        return $this->hasMany(\App\Models\CommunityLink::class, 'user_id');
+        return $this->hasMany(CommunityLink::class);
     }
 
+    // app/Models/User.php
     public function isTrusted()
     {
         return $this->trusted;
     }
 
+    // app/Models/User.php
     public function votes()
     {
         // Relación muchos a muchos con CommunityLink a través de la tabla pivote community_link_users
