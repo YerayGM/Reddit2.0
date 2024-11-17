@@ -2,58 +2,50 @@
 
 use App\Http\Controllers\CommunityLinkController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CommunityLinkUserController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-Route::resource('users', UserController::class)
-    ->middleware('can:administrate,App\Models\User');
-
-// Ruta para mostrar un usuario específico
-Route::get('users/{user}', [UserController::class, 'show'])->middleware(['auth', 'verified']);
-
-// Ruta de recursos para la gestión de usuarios, protegida por middleware
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('users', UserController::class);
-});
-
-Route::resource('banks', BankController::class)->middleware(['auth', 'verified']);
-
-Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware(['auth', 'verified']);
-
-Route::get('/community-links', [CommunityLinkController::class, 'index'])->name('communityLinks.index');
-
+// Página de inicio
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [CommunityLinkController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-Route::get('/contact', function () {
-    return view('contact');
-})->middleware(['auth', 'verified'])->name('contact');
-
-Route::get('/analitics', function () {
-    return view('analitics');
-})->middleware(['auth', 'verified'])->name('analitics');
-
-Route::middleware('auth')->group(function () {
+// Rutas protegidas por autenticación y verificación
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Rutas del perfil de usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-Route::post('/community-links', [CommunityLinkController::class, 'store'])->name('community-links.store')->middleware(['auth', 'verified']);
+    // Dashboard y enlaces comunitarios
+    Route::get('/dashboard', [CommunityLinkController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/{channel:slug}', [CommunityLinkController::class, 'index']);
 
-Route::middleware(['auth', 'verified'])->group(function () {
+    // Gestión de enlaces
+    Route::post('/community-links', [CommunityLinkController::class, 'store'])->name('community-links.store');
+    Route::get('/community-links', [CommunityLinkController::class, 'index'])->name('communityLinks.index');
     Route::get('/mylinks', [CommunityLinkController::class, 'myLinks'])->name('mylinks');
+
+    // Votar enlaces
+    Route::post('/votes/{link}', [CommunityLinkUserController::class, 'store']);
 });
 
-Route::get('dashboard/{channel:slug}', [CommunityLinkController::class, 'index']);
+// Gestión de usuarios solo para administradores
+Route::resource('users', UserController::class)->middleware('can:administrate,App\Models\User');
 
-Route::post('/votes/{link}', [CommunityLinkUserController::class, 'store'])->middleware(['auth', 'verified']);
+// Gestión de bancos
+Route::resource('banks', BankController::class)->middleware(['auth', 'verified']);
 
+// Rutas adicionales
+Route::get('/contact', function () {
+    return view('contact');
+})->name('contact');
+
+Route::get('/analitics', function () {
+    return view('analitics');
+})->name('analitics');
+
+// Autenticación
 require __DIR__.'/auth.php';

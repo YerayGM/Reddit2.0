@@ -38,7 +38,7 @@ class CommunityLinkController extends Controller
                 $q->where('title', 'like', '%' . $searchTerm . '%'); // Solo filtra por 'title'
             });
         }        
-    
+        
         // Pagina los resultados
         $links = $links->paginate(10)->appends(['query' => $searchTerm]);
     
