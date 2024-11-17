@@ -7,6 +7,9 @@ use App\Http\Controllers\CommunityLinkUserController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\UserController;
 
+Route::resource('users', UserController::class)
+    ->middleware('can:administrate,App\Models\User');
+
 // Ruta para mostrar un usuario específico
 Route::get('users/{user}', [UserController::class, 'show'])->middleware(['auth', 'verified']);
 
