@@ -148,6 +148,9 @@
                             Contribute!
                         </button>
                     </div>
+                    @if (session('token'))
+                    <p>Token: {{ session('token') }}</p>
+                    @endif
                 </form>
             </div>
         </div>

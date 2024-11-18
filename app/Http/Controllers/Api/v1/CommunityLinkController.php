@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class CommunityLinkController extends Controller
 {
+    public function index(Request $request) {
+        $communityLinks = CommunityLink::all(); 
+        return response()->json($communityLinks); 
+    }
+
     /**
      * Store a newly created resource in storage.
      */
